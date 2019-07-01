@@ -87,6 +87,6 @@ namespace IdentityServer4
                     Password = "password"
                 }
             };
-         }
+        }
     }
 }
