@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{198F9790-81C7-49C9-BF11-6FFC0040D7C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcWebApp", "MvcWebApp\MvcWebApp.csproj", "{A0DFF509-EB03-4A92-ADDA-CE0F262C6C6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcWebApp", "Clients\MvcWebApp\MvcWebApp.csproj", "{A0DFF509-EB03-4A92-ADDA-CE0F262C6C6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{D7B33F1B-FBDF-43CC-9611-CF8714F7DE7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "Clients\ConsoleApp\ConsoleApp.csproj", "{D7B33F1B-FBDF-43CC-9611-CF8714F7DE7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityServer\IdentityServer.csproj", "{1682DA2F-69B2-4174-B167-B28F98BBA9E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{9EB26352-4329-4C2E-9510-382B300DD4E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "Clients\WebApi\WebApi.csproj", "{9EB26352-4329-4C2E-9510-382B300DD4E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
