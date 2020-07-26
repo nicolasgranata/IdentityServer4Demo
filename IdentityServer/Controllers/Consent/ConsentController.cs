@@ -237,18 +237,18 @@ namespace IdentityServer4.Quickstart.UI
             };
         }
 
-        public ScopeViewModel CreateScopeViewModel(Scope scope, bool check)
-        {
-            return new ScopeViewModel
-            {
-                Name = scope.Name,
-                DisplayName = scope.DisplayName,
-                Description = scope.Description,
-                Emphasize = scope.Emphasize,
-                Required = scope.Required,
-                Checked = check || scope.Required
-            };
-        }
+        //public ScopeViewModel CreateScopeViewModel(Scope scope, bool check)
+        //{
+        //    return new ScopeViewModel
+        //    {
+        //        Name = scope.Name,
+        //        DisplayName = scope.DisplayName,
+        //        Description = scope.Description,
+        //        Emphasize = scope.Emphasize,
+        //        Required = scope.Required,
+        //        Checked = check || scope.Required
+        //    };
+        //}
 
         private ScopeViewModel GetOfflineAccessScope(bool check)
         {

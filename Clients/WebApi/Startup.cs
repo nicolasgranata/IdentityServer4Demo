@@ -27,14 +27,14 @@ namespace WebApi
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
-                {
-                    options.Authority = "http://localhost:5000";
-                    options.RequireHttpsMetadata = false;
+            //services.AddAuthentication("Bearer")
+            //    .AddJwtBearer("Bearer", options =>
+            //    {
+            //        options.Authority = "http://localhost:5000";
+            //        options.RequireHttpsMetadata = false;
 
-                    options.Audience = "api1";
-                });
+            //        options.Audience = "api1";
+            //    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
