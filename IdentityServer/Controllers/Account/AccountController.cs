@@ -1,8 +1,11 @@
 using IdentityModel;
 using IdentityServer.Models;
+using IdentityServer.Services.Interfaces;
+using IdentityServer.ViewModels;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
+using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Test;
@@ -16,6 +19,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer
 {
+    [SecurityHeaders]
     [AllowAnonymous]
     public class AccountController : Controller
     {
@@ -24,12 +28,14 @@ namespace IdentityServer
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _eventService;
+        private readonly IUserService<User> _userService;
 
         public AccountController(
             IIdentityServerInteractionService interactionService,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService eventService,
+            IUserService<User> userService,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -40,6 +46,7 @@ namespace IdentityServer
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _eventService = eventService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -85,12 +92,12 @@ namespace IdentityServer
 
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberLogin, false);
+                var result = await _userService.PasswordSignInAsync(model.Username, model.Password);
 
                 // validate username/password against service
-                if (result.Succeeded)
+                if (result)
                 {
-                    var user = _userService.FirstOrDefault(u => u.Email == model.Email);
+                    var user = _userService.FirstOrDefault(u => u.Email == model.Username);
                     await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.Email, user.Id.ToString(), user.FullName));
 
                     await RegisterToken(user, model.RememberLogin);
@@ -110,7 +117,7 @@ namespace IdentityServer
                     }
                 }
 
-                await _eventService.RaiseAsync(new UserLoginFailureEvent(model.Email, "Invalid credentials"));
+                await _eventService.RaiseAsync(new UserLoginFailureEvent(model.Username, "Invalid credentials"));
                 ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
             }
 
@@ -188,30 +195,14 @@ namespace IdentityServer
                 // this is meant to short circuit the UI and only trigger the one external IdP
                 var vm = new LoginViewModel
                 {
-                    EnableLocalLogin = local,
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
                 };
-
-                if (!local)
-                {
-                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
-                }
 
                 return vm;
             }
 
             var schemes = await _schemeProvider.GetAllSchemesAsync();
-
-            var providers = schemes
-                .Where(x => x.DisplayName != null ||
-                            (x.Name.Equals(AccountOptions.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
-                )
-                .Select(x => new ExternalProvider
-                {
-                    DisplayName = x.DisplayName,
-                    AuthenticationScheme = x.Name
-                }).ToList();
 
             var allowLocal = true;
             if (context?.ClientId != null)
@@ -231,10 +222,8 @@ namespace IdentityServer
             return new LoginViewModel
             {
                 AllowRememberLogin = AccountOptions.AllowRememberLogin,
-                EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
                 ReturnUrl = returnUrl,
                 Username = context?.LoginHint,
-                ExternalProviders = providers.ToArray()
             };
         }
 

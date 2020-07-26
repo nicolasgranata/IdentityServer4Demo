@@ -2,10 +2,10 @@
 
 namespace IdentityServer.Models
 {
-    public class LoginInputModel
+   public class LoginInputModel
   {
      [Required]
-     public string Email { get; set; }
+     public string Username { get; set; }
 
      [Required]
      public string Password { get; set; }
