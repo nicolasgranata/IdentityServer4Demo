@@ -8,7 +8,7 @@ namespace ConsoleApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Press any key to start!");
 
@@ -16,11 +16,11 @@ namespace ConsoleApp
 
             Console.WriteLine("\nProcessing...\n");
 
-            var accessToken = Task.Run( () => GetAccessTokenAsync()).Result;
+            var accessToken = await GetAccessTokenAsync();
 
             Console.WriteLine($"Access Token: {accessToken}");
 
-            var response = Task.Run(() => GetValues(accessToken)).Result;
+            var response = await GetValues(accessToken);
 
             Console.WriteLine($"\n{response}");
         }
@@ -30,7 +30,7 @@ namespace ConsoleApp
             var client = new HttpClient();
 
             // discover endpoints from metadata
-            var discover = await client.GetDiscoveryDocumentAsync("http://localhost:5000");
+            var discover = await client.GetDiscoveryDocumentAsync("http://localhost:5000").ConfigureAwait(false);
             if (discover.IsError)
             {
                 return discover.Error;
@@ -43,7 +43,7 @@ namespace ConsoleApp
                 ClientId = "consoleClient",
                 ClientSecret = "secret",
                 Scope = "api1"
-            });
+            }).ConfigureAwait(false);
 
             if (tokenResponse.IsError)
             {
@@ -60,7 +60,7 @@ namespace ConsoleApp
 
             client.SetBearerToken(accessToken);
 
-            var response = await client.GetAsync("http://localhost:52618/api/values");
+            var response = await client.GetAsync("http://localhost:52618/api/values").ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -68,7 +68,7 @@ namespace ConsoleApp
             }
             else
             {
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 return JArray.Parse(content).ToString();
             }
