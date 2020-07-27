@@ -79,7 +79,7 @@ namespace IdentityServer
                     // if the user cancels, send a result back into IdentityServer as if they 
                     // denied the consent (even if this client does not require consent).
                     // this will send back an access denied OIDC error response to the client.
-                    await _interactionService.GrantConsentAsync(context, ConsentResponse.Denied);
+                    await _interactionService.GrantConsentAsync(context, new ConsentResponse { Error = AuthorizationError.AccessDenied});
 
                     return Redirect(model.ReturnUrl);
                 }
@@ -200,23 +200,6 @@ namespace IdentityServer
                 };
 
                 return vm;
-            }
-
-            var schemes = await _schemeProvider.GetAllSchemesAsync();
-
-            var allowLocal = true;
-            if (context?.ClientId != null)
-            {
-                var client = await _clientStore.FindEnabledClientByIdAsync(context.ClientId);
-                if (client != null)
-                {
-                    allowLocal = client.EnableLocalLogin;
-
-                    if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
-                    {
-                        providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
-                    }
-                }
             }
 
             return new LoginViewModel
