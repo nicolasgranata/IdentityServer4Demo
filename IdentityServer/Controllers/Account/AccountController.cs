@@ -2,6 +2,7 @@ using IdentityModel;
 using IdentityServer.Models;
 using IdentityServer.Services.Interfaces;
 using IdentityServer.ViewModels;
+using IdentityServer4;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -9,6 +10,7 @@ using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Test;
+using IdentityServer4.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -100,7 +102,23 @@ namespace IdentityServer
                     var user = _userService.FirstOrDefault(u => u.Email == model.Username);
                     await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.Email, user.Id.ToString(), user.FullName));
 
-                    await RegisterToken(user, model.RememberLogin);
+                    AuthenticationProperties props = null;
+                    if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                    {
+                        props = new AuthenticationProperties
+                        {
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
+                        };
+                    };
+
+                    // issue authentication cookie with subject ID and username
+                    var isuser = new IdentityServerUser(user.Id)
+                    {
+                        DisplayName = user.Email,
+                    };
+
+                    await HttpContext.SignInAsync(isuser, props);
 
                     if (context != null || Url.IsLocalUrl(model.ReturnUrl))
                     {
