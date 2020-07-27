@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer
@@ -24,7 +23,7 @@ namespace IdentityServer
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly TestUserStore _users;
+        
         private readonly IIdentityServerInteractionService _interactionService;
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
@@ -36,13 +35,8 @@ namespace IdentityServer
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService eventService,
-            IUserService<User> userService,
-            TestUserStore users = null)
+            IUserService<User> userService)
         {
-            // if the TestUserStore is not in DI, then we'll just use the global users collection
-            // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
-            _users = users ?? new TestUserStore(TestUsers.Users);
-
             _interactionService = interactionService;
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
@@ -73,7 +67,7 @@ namespace IdentityServer
             var context = await _interactionService.GetAuthorizationContextAsync(model.ReturnUrl);
 
             // the user clicked the "cancel" button
-            if (button != "Log in")
+            if (button != "login")
             {
                 if (context != null)
                 {
@@ -98,8 +92,8 @@ namespace IdentityServer
                 // validate username/password against service
                 if (result)
                 {
-                    var user = _userService.FirstOrDefault(u => u.Email == model.Username);
-                    await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.Email, user.Id.ToString(), user.FullName));
+                    var user = _userService.FirstOrDefault(u => u.Username == model.Username);
+                    await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId.ToString(), user.FullName));
 
                     AuthenticationProperties props = null;
                     if (AccountOptions.AllowRememberLogin && model.RememberLogin)
@@ -112,7 +106,7 @@ namespace IdentityServer
                     };
 
                     // issue authentication cookie with subject ID and username
-                    var isuser = new IdentityServerUser(user.Id)
+                    var isuser = new IdentityServerUser(user.SubjectId)
                     {
                         DisplayName = user.Email,
                     };
@@ -142,7 +136,6 @@ namespace IdentityServer
             var vm = await BuildLoginViewModelAsync(model);
             return View(vm);
         }
-
 
         /// <summary>
         /// Show logout page
@@ -207,8 +200,6 @@ namespace IdentityServer
             var context = await _interactionService.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null)
             {
-                var local = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
-
                 // this is meant to short circuit the UI and only trigger the one external IdP
                 var vm = new LoginViewModel
                 {

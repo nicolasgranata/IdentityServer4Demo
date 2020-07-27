@@ -23,7 +23,7 @@ namespace IdentityServer4.Quickstart.UI
                 return View();
             }
 
-            return RedirectToAction("Login", "Account", new { returnUrl = "~/Account/SignedUp" });
+            return RedirectToAction("Login", "Account", new { returnUrl = "~/Home/Index" });
         }
 
         public IActionResult Privacy()

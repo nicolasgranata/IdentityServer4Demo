@@ -13,7 +13,7 @@ namespace IdentityServer.Services.Interfaces
         /// </summary>
         /// <param name="filter">Filter</param>
         /// <returns>User</returns>
-        T FirstOrDefault(Expression<Func<T, bool>> filter = null);
+        T FirstOrDefault(Func<T, bool> filter = null);
 
         Task<bool> PasswordSignInAsync(string userName, string password);
     }

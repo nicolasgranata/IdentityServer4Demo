@@ -48,12 +48,13 @@ namespace IdentityServer4
                     AllowedScopes = { "api1" }
                 },
 
-                 // OpenID Connect implicit flow client (MVC)
+                 // OpenID Connect Code Grant Type ASP.NET Core MVC App
                 new Client
                 {
                     ClientId = "mvcWebApp",
                     ClientName = "MVC Client",
-                    AllowedGrantTypes = GrantTypes.Implicit,
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+                    AllowedGrantTypes = GrantTypes.Code,
 
                     // where to redirect to after login
                     RedirectUris = { "http://localhost:58791/signin-oidc" },
@@ -68,25 +69,6 @@ namespace IdentityServer4
                     }
                 }
            };
-        }
-
-        public static List<TestUser> GetUsers()
-        {
-            return new List<TestUser>
-            {
-                new TestUser
-                {
-                    SubjectId = "1",
-                    Username = "alice",
-                    Password = "password"
-                },
-                new TestUser
-                {
-                    SubjectId = "2",
-                    Username = "bob",
-                    Password = "password"
-                }
-            };
         }
     }
 }

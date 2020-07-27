@@ -1,4 +1,7 @@
 ﻿using System;
+using IdentityServer.Models;
+using IdentityServer.Services;
+using IdentityServer.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,8 +25,7 @@ namespace IdentityServer4
             var builder = services.AddIdentityServer()
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApis())
-                .AddInMemoryClients(Config.GetClients())
-                .AddTestUsers(Config.GetUsers());
+                .AddInMemoryClients(Config.GetClients());
 
             if (Environment.IsDevelopment())
             {
@@ -33,11 +35,13 @@ namespace IdentityServer4
             {
                 throw new Exception("need to configure key material");
             }
+
+            services.AddSingleton<IUserService<User>, UserService>();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (Environment.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }

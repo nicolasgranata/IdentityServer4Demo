@@ -1,23 +1,24 @@
-﻿using IdentityServer.Models;
+﻿using IdentityServer.Helpers;
+using IdentityServer.Models;
 using IdentityServer.Services.Interfaces;
 using System;
-using System.Linq.Expressions;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Services
 {
     public class UserService : IUserService<User>
     {
-        public User FirstOrDefault(Expression<Func<User, bool>> filter = null)
+        public User FirstOrDefault(Func<User, bool> filter = null)
         {
-            throw new NotImplementedException();
+            return UserStore.Users.FirstOrDefault(filter);
         }
 
         public async Task<bool> PasswordSignInAsync(string userName, string password)
         {
-            await Task.CompletedTask;
+            var user = UserStore.Users.Single(x => x.Username == userName);
 
-            throw new NotImplementedException();
+            return await Task.FromResult(user.Password == password);
         }
     }
 }

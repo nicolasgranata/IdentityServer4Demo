@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace MvcWebApp
 {
@@ -43,8 +44,9 @@ namespace MvcWebApp
               {
                   options.Authority = "http://localhost:5000";
                   options.RequireHttpsMetadata = false;
-
                   options.ClientId = "mvcWebApp";
+                  options.ClientSecret = "secret";
+                  options.ResponseType = OpenIdConnectResponseType.Code;
                   options.SaveTokens = true;
               });
         }
@@ -68,6 +70,8 @@ namespace MvcWebApp
             app.UseRouting();
 
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseCookiePolicy();
 
