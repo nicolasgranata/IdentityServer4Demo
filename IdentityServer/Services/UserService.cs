@@ -1,15 +1,15 @@
 ﻿using IdentityServer.Helpers;
-using IdentityServer.Models;
 using IdentityServer.Services.Interfaces;
+using IdentityServer4.Test;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Services
 {
-    public class UserService : IUserService<User>
+    public class UserService : IUserService<TestUser>
     {
-        public User FirstOrDefault(Func<User, bool> filter = null)
+        public TestUser FirstOrDefault(Func<TestUser, bool> filter = null)
         {
             return UserStore.Users.FirstOrDefault(filter);
         }

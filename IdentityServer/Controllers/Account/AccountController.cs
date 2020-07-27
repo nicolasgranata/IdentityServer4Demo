@@ -28,14 +28,14 @@ namespace IdentityServer
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _eventService;
-        private readonly IUserService<User> _userService;
+        private readonly IUserService<TestUser> _userService;
 
         public AccountController(
             IIdentityServerInteractionService interactionService,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService eventService,
-            IUserService<User> userService)
+            IUserService<TestUser> userService)
         {
             _interactionService = interactionService;
             _clientStore = clientStore;
@@ -93,7 +93,7 @@ namespace IdentityServer
                 if (result)
                 {
                     var user = _userService.FirstOrDefault(u => u.Username == model.Username);
-                    await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId.ToString(), user.FullName));
+                    await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId, user.Username, clientId: context?.Client.ClientId));
 
                     AuthenticationProperties props = null;
                     if (AccountOptions.AllowRememberLogin && model.RememberLogin)
@@ -108,7 +108,7 @@ namespace IdentityServer
                     // issue authentication cookie with subject ID and username
                     var isuser = new IdentityServerUser(user.SubjectId)
                     {
-                        DisplayName = user.Email,
+                        DisplayName = user.Username,
                     };
 
                     await HttpContext.SignInAsync(isuser, props);

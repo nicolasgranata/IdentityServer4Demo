@@ -15,7 +15,8 @@ namespace IdentityServer4
             return new IdentityResource[]
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                new IdentityResources.Email(),
             };
         }
 
@@ -66,6 +67,7 @@ namespace IdentityServer4
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
                     }
                 }
            };
