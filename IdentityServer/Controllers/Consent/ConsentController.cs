@@ -8,8 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.ViewModels;
+using IdentityServer.ViewModels;
 using IdentityServer4.Quickstart.UI;
+using System.Collections.Generic;
+using IdentityServer4.Validation;
+using System;
+using IdentityServer.Models;
 
 namespace IdentityServer4
 {
@@ -110,7 +114,7 @@ namespace IdentityServer4
                 grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
                 // emit event
-                await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ScopesRequested));
+                await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
             }
             // user clicked 'yes' - validate the data
             else if (model?.Button == "yes")
@@ -131,7 +135,7 @@ namespace IdentityServer4
                     };
 
                     // emit event
-                    await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ScopesRequested, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
+                    await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
                 }
                 else
                 {
@@ -166,23 +170,7 @@ namespace IdentityServer4
             var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (request != null)
             {
-                var client = await _clientStore.FindEnabledClientByIdAsync(request.Client.ClientId);
-                if (client != null)
-                {
-                    var resources = await _resourceStore.FindEnabledResourcesByScopeAsync(request.ScopesRequested);
-                    if (resources != null && (resources.IdentityResources.Any() || resources.ApiResources.Any()))
-                    {
-                        return CreateConsentViewModel(model, returnUrl, request, client, resources);
-                    }
-                    else
-                    {
-                        _logger.LogError("No scopes matching: {0}", request.ScopesRequested.Aggregate((x, y) => x + ", " + y));
-                    }
-                }
-                else
-                {
-                    _logger.LogError("Invalid client id: {0}", request.Client.ClientId);
-                }
+                return CreateConsentViewModel(model, returnUrl, request);
             }
             else
             {
@@ -192,32 +180,39 @@ namespace IdentityServer4
             return null;
         }
 
-        private ConsentViewModel CreateConsentViewModel(
-            ConsentInputModel model, string returnUrl,
-            AuthorizationRequest request,
-            Client client, Resources resources)
+        private ConsentViewModel CreateConsentViewModel(ConsentInputModel model, string returnUrl, AuthorizationRequest request)
         {
             var vm = new ConsentViewModel
             {
                 RememberConsent = model?.RememberConsent ?? true,
                 ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),
+                Description = model?.Description,
 
                 ReturnUrl = returnUrl,
 
-                ClientName = client.ClientName ?? client.ClientId,
-                ClientUrl = client.ClientUri,
-                ClientLogoUrl = client.LogoUri,
-                AllowRememberConsent = client.AllowRememberConsent
+                ClientName = request.Client.ClientName ?? request.Client.ClientId,
+                ClientUrl = request.Client.ClientUri,
+                ClientLogoUrl = request.Client.LogoUri,
+                AllowRememberConsent = request.Client.AllowRememberConsent
             };
 
-            vm.IdentityScopes = resources.IdentityResources.Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
-            vm.ResourceScopes = resources.ApiResources.SelectMany(x => x.Scopes).Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x) || model == null)).ToArray();
-            if (ConsentOptions.EnableOfflineAccess && resources.OfflineAccess)
+            vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
+
+            var apiScopes = new List<ScopeViewModel>();
+            foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
             {
-                vm.ResourceScopes = vm.ResourceScopes.Union(new ScopeViewModel[] {
-                    GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null)
-                });
+                var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
+                if (apiScope != null)
+                {
+                    var scopeVm = CreateScopeViewModel(parsedScope, apiScope, vm.ScopesConsented.Contains(parsedScope.RawValue) || model == null);
+                    apiScopes.Add(scopeVm);
+                }
             }
+            if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
+            {
+                apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
+            }
+            vm.ApiScopes = apiScopes;
 
             return vm;
         }
@@ -226,8 +221,8 @@ namespace IdentityServer4
         {
             return new ScopeViewModel
             {
-                Name = identity.Name,
-                DisplayName = identity.DisplayName,
+                Value = identity.Name,
+                DisplayName = identity.DisplayName ?? identity.Name,
                 Description = identity.Description,
                 Emphasize = identity.Emphasize,
                 Required = identity.Required,
@@ -235,24 +230,30 @@ namespace IdentityServer4
             };
         }
 
-        //public ScopeViewModel CreateScopeViewModel(Scope scope, bool check)
-        //{
-        //    return new ScopeViewModel
-        //    {
-        //        Name = scope.Name,
-        //        DisplayName = scope.DisplayName,
-        //        Description = scope.Description,
-        //        Emphasize = scope.Emphasize,
-        //        Required = scope.Required,
-        //        Checked = check || scope.Required
-        //    };
-        //}
+        public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
+        {
+            var displayName = apiScope.DisplayName ?? apiScope.Name;
+            if (!string.IsNullOrWhiteSpace(parsedScopeValue.ParsedParameter))
+            {
+                displayName += ":" + parsedScopeValue.ParsedParameter;
+            }
+
+            return new ScopeViewModel
+            {
+                Value = parsedScopeValue.RawValue,
+                DisplayName = displayName,
+                Description = apiScope.Description,
+                Emphasize = apiScope.Emphasize,
+                Required = apiScope.Required,
+                Checked = check || apiScope.Required
+            };
+        }
 
         private ScopeViewModel GetOfflineAccessScope(bool check)
         {
             return new ScopeViewModel
             {
-                Name = IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess,
+                Name = IdentityServerConstants.StandardScopes.OfflineAccess,
                 DisplayName = ConsentOptions.OfflineAccessDisplayName,
                 Description = ConsentOptions.OfflineAccessDescription,
                 Emphasize = true,

@@ -1,4 +1,4 @@
-﻿namespace IdentityServer4.ViewModels
+﻿namespace IdentityServer.ViewModels
 {
     public class ScopeViewModel
     {
@@ -8,5 +8,6 @@
         public bool Emphasize { get; set; }
         public bool Required { get; set; }
         public bool Checked { get; set; }
+        public string Value { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 using IdentityServer.Models;
 
-namespace IdentityServer4.ViewModels
+namespace IdentityServer.ViewModels
 {
     public class LogoutViewModel : LogoutInputModel
     {

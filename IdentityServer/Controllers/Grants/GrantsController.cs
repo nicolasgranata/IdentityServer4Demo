@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Quickstart.UI;
+using IdentityServer.ViewModels;
 
 namespace IdentityServer4
 {
@@ -58,7 +59,7 @@ namespace IdentityServer4
 
         private async Task<GrantsViewModel> BuildViewModelAsync()
         {
-            var grants = await _interaction.GetAllUserConsentsAsync();
+            var grants = await _interaction.GetAllUserGrantsAsync();
 
             var list = new List<GrantViewModel>();
             foreach(var grant in grants)

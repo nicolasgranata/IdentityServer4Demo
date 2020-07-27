@@ -658,3 +658,72 @@
 2019-06-30 21:27:36.197 -03:00 [DBG] Issued claims: []
 2019-06-30 21:27:36.481 -03:00 [INF] Authorize endpoint response
 {"SubjectId":"1","ClientId":"mvcWebApp","RedirectUri":"http://localhost:58791/signin-oidc","State":"CfDJ8EbA5EjolxlMtVf74mQUs2t6VGhHgqeiAjH3pLOeWAxiTHUoOkh2h4nLJFXYXx03NI6a-FpMgwrJ7yG3NKsKAMKu9OGl_ygq2c5gBnH0gbkckmFqWUrQbkfo71L-FZ_DQBa3213nIGRpYZEIdJRSLyoOVfWJNuR2zXwABoFa3IdhhxvdRp7svZTA6qYncpfQp50MSJQ_VMKkqCtim0kWdmkTejUwBwRYz-QrwCeYmFrIh6DGJZ4HZHTpHgAZNP183Qexl7cj1WM-jbGkGOH6-8q_7BTaCy1qZA8cAXZWvVqdpFlrB8w-tcLAweICWyBnqdmYz3Pq4_mYcCVDTNWF_4k","Scope":"openid profile","Error":null,"ErrorDescription":null,"$type":"AuthorizeResponseLog"}
+2020-07-27 13:02:06.189 -03:00 [INF] Starting IdentityServer4 version 4.0.4+1b36d1b414f4e0f965af97ab2a7e9dd1b5167bca
+2020-07-27 13:02:06.292 -03:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2020-07-27 13:02:06.304 -03:00 [INF] Using the default authentication scheme idsrv for IdentityServer
+2020-07-27 13:02:06.304 -03:00 [DBG] Using idsrv as default ASP.NET Core scheme for authentication
+2020-07-27 13:02:06.304 -03:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-in
+2020-07-27 13:02:06.305 -03:00 [DBG] Using idsrv as default ASP.NET Core scheme for sign-out
+2020-07-27 13:02:06.305 -03:00 [DBG] Using idsrv as default ASP.NET Core scheme for challenge
+2020-07-27 13:02:06.308 -03:00 [DBG] Using idsrv as default ASP.NET Core scheme for forbid
+2020-07-27 13:02:11.156 -03:00 [DBG] Login Url: /Account/Login
+2020-07-27 13:02:11.158 -03:00 [DBG] Login Return Url Parameter: ReturnUrl
+2020-07-27 13:02:11.160 -03:00 [DBG] Logout Url: /Account/Logout
+2020-07-27 13:02:11.161 -03:00 [DBG] ConsentUrl Url: /consent
+2020-07-27 13:02:11.163 -03:00 [DBG] Consent Return Url Parameter: returnUrl
+2020-07-27 13:02:11.164 -03:00 [DBG] Error Url: /home/error
+2020-07-27 13:02:11.165 -03:00 [DBG] Error Id Parameter: errorId
+2020-07-27 13:02:11.184 -03:00 [DBG] Request path /.well-known/openid-configuration matched to endpoint type Discovery
+2020-07-27 13:02:11.188 -03:00 [DBG] Endpoint enabled: Discovery, successfully created handler: IdentityServer4.Endpoints.DiscoveryEndpoint
+2020-07-27 13:02:11.190 -03:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.DiscoveryEndpoint for /.well-known/openid-configuration
+2020-07-27 13:02:11.196 -03:00 [DBG] Start discovery request
+2020-07-27 13:02:11.501 -03:00 [DBG] Request path /.well-known/openid-configuration/jwks matched to endpoint type Discovery
+2020-07-27 13:02:11.512 -03:00 [DBG] Endpoint enabled: Discovery, successfully created handler: IdentityServer4.Endpoints.DiscoveryKeyEndpoint
+2020-07-27 13:02:11.513 -03:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.DiscoveryKeyEndpoint for /.well-known/openid-configuration/jwks
+2020-07-27 13:02:11.518 -03:00 [DBG] Start key discovery request
+2020-07-27 13:02:11.880 -03:00 [DBG] Request path /connect/token matched to endpoint type Token
+2020-07-27 13:02:11.888 -03:00 [DBG] Endpoint enabled: Token, successfully created handler: IdentityServer4.Endpoints.TokenEndpoint
+2020-07-27 13:02:11.889 -03:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.TokenEndpoint for /connect/token
+2020-07-27 13:02:11.896 -03:00 [DBG] Start token request.
+2020-07-27 13:02:11.898 -03:00 [DBG] Start client validation
+2020-07-27 13:02:11.901 -03:00 [DBG] Start parsing Basic Authentication secret
+2020-07-27 13:02:11.903 -03:00 [DBG] Start parsing for secret in post body
+2020-07-27 13:02:11.917 -03:00 [DBG] Parser found secret: PostBodySecretParser
+2020-07-27 13:02:11.918 -03:00 [DBG] Secret id found: consoleClient
+2020-07-27 13:02:11.925 -03:00 [DBG] client configuration validation for client consoleClient succeeded.
+2020-07-27 13:02:11.936 -03:00 [DBG] Secret validator success: HashedSharedSecretValidator
+2020-07-27 13:02:11.937 -03:00 [DBG] Client validation success
+2020-07-27 13:02:11.948 -03:00 [DBG] Start token request validation
+2020-07-27 13:02:11.953 -03:00 [DBG] Start client credentials token request validation
+2020-07-27 13:02:11.968 -03:00 [ERR] Scope api1 not found in store.
+2020-07-27 13:02:11.981 -03:00 [ERR] Invalid scopes requested, {"ClientId":"consoleClient","ClientName":null,"GrantType":"client_credentials","Scopes":null,"AuthorizationCode":null,"RefreshToken":null,"UserName":null,"AuthenticationContextReferenceClasses":null,"Tenant":null,"IdP":null,"Raw":{"grant_type":"client_credentials","scope":"api1","client_id":"consoleClient","client_secret":"***REDACTED***"},"$type":"TokenRequestValidationLog"}
+2020-07-27 13:02:12.201 -03:00 [DBG] Request path /.well-known/openid-configuration matched to endpoint type Discovery
+2020-07-27 13:02:12.203 -03:00 [DBG] Endpoint enabled: Discovery, successfully created handler: IdentityServer4.Endpoints.DiscoveryEndpoint
+2020-07-27 13:02:12.205 -03:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.DiscoveryEndpoint for /.well-known/openid-configuration
+2020-07-27 13:02:12.206 -03:00 [DBG] Start discovery request
+2020-07-27 13:02:12.471 -03:00 [DBG] Request path /.well-known/openid-configuration/jwks matched to endpoint type Discovery
+2020-07-27 13:02:12.474 -03:00 [DBG] Endpoint enabled: Discovery, successfully created handler: IdentityServer4.Endpoints.DiscoveryKeyEndpoint
+2020-07-27 13:02:12.478 -03:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.DiscoveryKeyEndpoint for /.well-known/openid-configuration/jwks
+2020-07-27 13:02:12.481 -03:00 [DBG] Start key discovery request
+2020-07-27 13:02:36.030 -03:00 [ERR] An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: Unable to resolve service for type 'IdentityServer.Services.Interfaces.IUserService`1[IdentityServer.Models.User]' while attempting to activate 'IdentityServer.AccountController'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.GetService(IServiceProvider sp, Type type, Type requiredBy, Boolean isDefaultParameterRequired)
+   at lambda_method(Closure , IServiceProvider , Object[] )
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerActivatorProvider.<>c__DisplayClass4_0.<CreateActivator>b__0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass5_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|24_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at IdentityServer4.Hosting.IdentityServerMiddleware.Invoke(HttpContext context, IEndpointRouter router, IUserSession session, IEventService events, IBackChannelLogoutService backChannelLogoutService)
+   at IdentityServer4.Hosting.MutualTlsEndpointMiddleware.Invoke(HttpContext context, IAuthenticationSchemeProvider schemes)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at IdentityServer4.Hosting.BaseUrlMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)

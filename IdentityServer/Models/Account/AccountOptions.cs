@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IdentityServer4.Models
+namespace IdentityServer.Models
 {
     public class AccountOptions
     {
