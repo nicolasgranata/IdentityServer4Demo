@@ -26,7 +26,7 @@ namespace IdentityServer4
 
             var builder = services.AddIdentityServer()
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                .AddInMemoryApiResources(Config.GetApis())
+                .AddInMemoryApiScopes(Config.GetApis())
                 .AddInMemoryClients(Config.GetClients())
                 .AddTestUsers(UserStore.Users);
 

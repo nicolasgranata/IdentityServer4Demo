@@ -16,15 +16,14 @@ namespace IdentityServer4
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
-                new IdentityResources.Email(),
             };
         }
 
-        public static IEnumerable<ApiResource> GetApis()
+        public static IEnumerable<ApiScope> GetApis()
         {
-            return new ApiResource[]
+            return new ApiScope[]
             {
-                new ApiResource("api1", "API 1")
+                new ApiScope("api1", "API 1")
             };
         }
 
@@ -57,17 +56,15 @@ namespace IdentityServer4
                     ClientSecrets = { new Secret("secret".Sha256()) },
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    // where to redirect to after login
                     RedirectUris = { "http://localhost:58791/signin-oidc" },
-
-                    // where to redirect to after logout
                     PostLogoutRedirectUris = { "http://localhost:58791/signout-callback-oidc" },
+
+                    RequireConsent = true,
 
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email,
                     }
                 }
            };

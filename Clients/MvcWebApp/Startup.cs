@@ -49,11 +49,6 @@ namespace MvcWebApp
                   options.ResponseType = "code";
                   options.UsePkce = true;
 
-                  options.Scope.Clear();
-                  options.Scope.Add("openid");
-                  options.Scope.Add("profile");
-                  options.Scope.Add("email");
-
                   options.GetClaimsFromUserInfoEndpoint = true;
                   options.SaveTokens = true;
               });

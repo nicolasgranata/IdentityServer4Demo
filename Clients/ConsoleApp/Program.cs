@@ -14,11 +14,13 @@ namespace ConsoleApp
 
             Console.ReadKey();
 
-            Console.WriteLine("\nProcessing...\n");
+            Console.WriteLine("\nGetting Access Token...\n");
 
             var accessToken = await GetAccessTokenAsync();
 
             Console.WriteLine($"Access Token: {accessToken}");
+
+            Console.WriteLine("\nGetting Values from the Rest API...\n");
 
             var response = await GetValues(accessToken);
 
