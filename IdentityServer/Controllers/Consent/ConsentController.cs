@@ -72,12 +72,7 @@ namespace IdentityServer4
 
             if (result.IsRedirect)
             {
-                if (await _clientStore.IsPkceClientAsync(result.ClientId))
-                {
-                    // if the client is PKCE then we assume it's native, so this change in how to
-                    // return the response is for better UX for the end user.
-                    return View("Redirect", new RedirectViewModel { RedirectUrl = result.RedirectUri });
-                }
+                var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
 
                 return Redirect(result.RedirectUri);
             }
@@ -131,7 +126,8 @@ namespace IdentityServer4
                     grantedConsent = new ConsentResponse
                     {
                         RememberConsent = model.RememberConsent,
-                        ScopesValuesConsented = scopes.ToArray()
+                        ScopesValuesConsented = scopes.ToArray(),
+                        Description = model.Description
                     };
 
                     // emit event
@@ -154,7 +150,7 @@ namespace IdentityServer4
 
                 // indicate that's it ok to redirect back to authorization endpoint
                 result.RedirectUri = model.ReturnUrl;
-                result.ClientId = request.Client.ClientId;
+                result.Client = request.Client;
             }
             else
             {
@@ -164,6 +160,7 @@ namespace IdentityServer4
 
             return result;
         }
+
 
         private async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
         {
@@ -180,7 +177,9 @@ namespace IdentityServer4
             return null;
         }
 
-        private ConsentViewModel CreateConsentViewModel(ConsentInputModel model, string returnUrl, AuthorizationRequest request)
+        private ConsentViewModel CreateConsentViewModel(
+                    ConsentInputModel model, string returnUrl,
+                    AuthorizationRequest request)
         {
             var vm = new ConsentViewModel
             {
@@ -253,7 +252,7 @@ namespace IdentityServer4
         {
             return new ScopeViewModel
             {
-                Name = IdentityServerConstants.StandardScopes.OfflineAccess,
+                Value = IdentityServerConstants.StandardScopes.OfflineAccess,
                 DisplayName = ConsentOptions.OfflineAccessDisplayName,
                 Description = ConsentOptions.OfflineAccessDescription,
                 Emphasize = true,

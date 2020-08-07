@@ -74,7 +74,7 @@ namespace IdentityServer
                     // if the user cancels, send a result back into IdentityServer as if they 
                     // denied the consent (even if this client does not require consent).
                     // this will send back an access denied OIDC error response to the client.
-                    await _interactionService.GrantConsentAsync(context, new ConsentResponse { Error = AuthorizationError.AccessDenied});
+                    await _interactionService.DenyAuthorizationAsync(context, AuthorizationError.AccessDenied);
 
                     return Redirect(model.ReturnUrl);
                 }
@@ -87,14 +87,14 @@ namespace IdentityServer
 
             if (ModelState.IsValid)
             {
-                var result = await _userService.PasswordSignInAsync(model.Username, model.Password);
-
-                // validate username/password against service
-                if (result)
+                // validate username/password against in-memory store
+                if (await _userService.PasswordSignInAsync(model.Username, model.Password))
                 {
-                    var user = _userService.FirstOrDefault(u => u.Username == model.Username);
+                    var user = _userService.FirstOrDefault(x => x.Username == model.Username);
                     await _eventService.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId, user.Username, clientId: context?.Client.ClientId));
 
+                    // only set explicit expiration here if user chooses "remember me". 
+                    // otherwise we rely upon expiration configured in cookie middleware.
                     AuthenticationProperties props = null;
                     if (AccountOptions.AllowRememberLogin && model.RememberLogin)
                     {
@@ -108,12 +108,19 @@ namespace IdentityServer
                     // issue authentication cookie with subject ID and username
                     var isuser = new IdentityServerUser(user.SubjectId)
                     {
-                        DisplayName = user.Username,
+                        DisplayName = user.Username
                     };
 
                     await HttpContext.SignInAsync(isuser, props);
 
-                    if (context != null || Url.IsLocalUrl(model.ReturnUrl))
+                    if (context != null)
+                    {
+                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                        return Redirect(model.ReturnUrl);
+                    }
+
+                    // request for a local page
+                    if (Url.IsLocalUrl(model.ReturnUrl))
                     {
                         return Redirect(model.ReturnUrl);
                     }
@@ -124,11 +131,11 @@ namespace IdentityServer
                     else
                     {
                         // user might have clicked on a malicious link - should be logged
-                        throw new Exception("Invalid return URL");
+                        throw new Exception("invalid return URL");
                     }
                 }
 
-                await _eventService.RaiseAsync(new UserLoginFailureEvent(model.Username, "Invalid credentials"));
+                await _eventService.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
                 ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
             }
 
