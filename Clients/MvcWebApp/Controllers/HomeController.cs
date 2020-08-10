@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcWebApp.Models;
@@ -24,9 +26,9 @@ namespace MvcWebApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult Logout()
+        public async Task Logout()
         {
-            return SignOut("cookie", "oidc");
+            await HttpContext.SignOutAsync();
         }
     }
 }
